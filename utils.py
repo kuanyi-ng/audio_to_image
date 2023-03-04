@@ -6,9 +6,9 @@ from dotenv import load_dotenv
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-@st.cache_data
-def convert_m4a_to_mp3(input_file_path: str, output_file_path: str):
-  os.system(f"ffmpeg -i {input_file_path} -c:v copy -c:a libmp3lame -q:a 4 {output_file_path}")
+# @st.cache_data
+# def convert_m4a_to_mp3(input_file_path: str, output_file_path: str):
+#   os.system(f"ffmpeg -i {input_file_path} -c:v copy -c:a libmp3lame -q:a 4 {output_file_path}")
 
 @st.cache_data
 def transcribe(audio_file):
@@ -16,8 +16,6 @@ def transcribe(audio_file):
 
 @st.cache_data
 def segmentation(long_text: str):
-  text_length = len(long_text)
-
   min_length = 1000
   segmented_texts = []
 

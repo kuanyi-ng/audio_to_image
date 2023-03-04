@@ -1,6 +1,6 @@
 import streamlit as st
-from time import sleep
 
+from time import sleep
 from utils import *
 
 st.header("音声データから、タイトル、ライナーノート、とジャケットを作成")
