@@ -1,6 +1,5 @@
 import streamlit as st
 
-from time import sleep
 from utils import *
 
 st.header("音声データから、タイトル、ライナーノート、とジャケットを作成")
@@ -21,14 +20,7 @@ if uploaded_file is not None:
     # 音声データからテキストを起こす
     transcript = transcribe(uploaded_file)
 
-    segmented_transcript = segmentation(transcript.text)
-
-    segmented_summary = []
-    for segment in segmented_transcript:
-        segmented_summary.append(summarize(segment))
-
-        sleep(5) # sleep for 5 seconds to avoid rate limit    
-
+    segmented_summary = segment_and_summarize(transcript.text)
 
 # segmented_summary = [
 #     '会話で本を読むがカオスなので学生に見せることになり、ページの見方に苦戦している。最新のページはどこかも分からない。',

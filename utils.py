@@ -2,6 +2,7 @@ import streamlit as st
 import openai
 import os
 from dotenv import load_dotenv
+from time import sleep
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -52,6 +53,18 @@ def summarize(text: str):
   )
 
   return completion.choices[0].message.content
+
+@st.cache_data
+def segment_and_summarize(long_text: str):
+    segmented_texts = segmentation(long_text)
+
+    segmented_summary = []
+    for segment in segmented_texts:
+        segmented_summary.append(summarize(segment))
+
+        sleep(5) # sleep for 5 seconds to avoid rate limit
+
+    return segmented_summary
 
 @st.cache_data
 def create_title(text: str):
