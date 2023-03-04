@@ -3,3 +3,4 @@ pipdeptree
 watchdog
 streamlit
 openai
+python-dotenv
