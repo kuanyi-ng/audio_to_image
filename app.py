@@ -60,7 +60,7 @@ def generate_output():
 
     image_text = note if len(note) < IMAGE_PROMPT_MAX_LENGTH else summarize(note)
 
-    image_url = create_image(image_text)
+    image_url = create_image(image_text, "512x512")
 
     st.write(f'タイトル: {title}')
     st.write(f'ライナーノート:\n{liner_note}')
