@@ -17,7 +17,6 @@ uploaded_file = st.file_uploader("音声データを選ぶ...", type=['mp3', 'm4
 segmented_summary = []
 
 if uploaded_file is not None:
-    st.write(uploaded_file.name)
     audio_file_path = uploaded_file.name
     
     # 音声データからテキストを起こす
@@ -52,22 +51,28 @@ selected_segments = [ segmented_summary[i] for i, selected in enumerate(selected
 
 def generate_output():
     note = '\n'.join(selected_segments)
-    if len(note) > 0:
-        title = create_title(note)
 
-        liner_note = '\n'.join(segmented_summary)
-        if len(liner_note) > LINER_NOTE_MAX_LENGTH:
-            liner_note = summarize(liner_note)
+    title = create_title(note)
 
-        image_text = note if len(note) < IMAGE_PROMPT_MAX_LENGTH else summarize(note)
+    liner_note = '\n'.join(segmented_summary)
+    if len(liner_note) > LINER_NOTE_MAX_LENGTH:
+        liner_note = summarize(liner_note)
 
-        image_url = create_image(image_text)
+    image_text = note if len(note) < IMAGE_PROMPT_MAX_LENGTH else summarize(note)
 
-        st.write(f'タイトル: {title}')
-        st.write(f'ライナーノート:\n{liner_note}')
-        st.write(f'画像のテキスト:\n{image_text}')
-        st.image(image_url)
-        st.write(f'画像 URL: {image_url}')
+    image_url = create_image(image_text)
 
-if len(selected_segments_idx) > 0:
-    st.button('生成する！', on_click=generate_output)
+    st.write(f'タイトル: {title}')
+    st.write(f'ライナーノート:\n{liner_note}')
+    st.write(f'画像のテキスト:\n{image_text}')
+    st.image(image_url)
+    st.write(f'画像 URL: {image_url}')
+
+    json_data = {
+        'title': title,
+        'liner_note': liner_note,
+        'image_url': image_url,
+    }
+    st.download_button('出力データをダウンロード', str(json_data), file_name='record_jacket.json', mime='application/json')
+
+st.button('生成する！', on_click=generate_output, disabled=len(selected_segments) <= 0)
