@@ -57,7 +57,7 @@ def segment_and_summarize(long_text: str, segmentation_min_length: int):
     for segment in segmented_texts:
         segmented_summary.append(summarize(segment))
 
-        sleep(5) # sleep for 5 seconds to avoid rate limit
+        sleep(1) # sleep to avoid rate limit
 
     return segmented_summary
 
