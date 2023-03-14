@@ -52,6 +52,8 @@ def generate_output():
     st.write(f'画像 URL: {image_url}')
 
     json_data = {
+        'transcript': transcript.text,
+        'segmented_summary': segmented_summary,
         'title': title,
         'liner_note': liner_note,
         'image_url': image_url,
