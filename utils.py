@@ -7,6 +7,19 @@ from time import sleep
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+def chat_completion(prompt: str, model: str = 'gpt-4'):
+    completion = openai.ChatCompletion.create(
+        model=model,
+        messages=[
+            {
+                "role": "user",
+                "content": prompt
+            },
+        ]
+    )
+
+    return completion.choices[0].message.content
+
 @st.cache_data
 def transcribe(audio_file):
   return openai.Audio.transcribe("whisper-1", audio_file)
