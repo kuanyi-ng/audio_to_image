@@ -21,6 +21,12 @@ def chat_completion(prompt: str, model: str = 'gpt-4'):
     return completion.choices[0].message.content
 
 @st.cache_data
+def translate_to_en(text: str):
+    prompt = f"このテキストを英語に翻訳してください\n```\n{text}\n```"
+
+    return chat_completion(prompt)
+
+@st.cache_data
 def transcribe(audio_file):
     return openai.Audio.transcribe("whisper-1", audio_file)
 
@@ -103,24 +109,12 @@ def create_title(text: str):
     return chat_completion(prompt)
 
 @st.cache_data
-def create_image_prompt(text: str):
-    prompt = f"""
-# ルール
-AIにイラスト生成の指示を出すプロンプトを作成します。
-下のテキストから、形容詞・動詞・名詞のみを使用してキーワードリストを作成してください。
-キーワードは、テキストの内容を表現できるようなものにしてください。
-英語のキーワードにしてください。
-キーワード数は10個以上、30個以内にしてください。
-その他の情報は不要です。
+def create_image_prompt(text: str, prompt_prefix: str):
+    summarized_text = summarize(text, 500)
+    text_in_en = translate_to_en(text)
+    text_in_en = chat_completion(f"Summarize the following text within 350 characters.\n```\n{summarized_text}\n```")
 
-# テキスト
-{text}
-
-# フォーマット
-keyword, keyword, keyword, (以下ループ)
-    """
-  
-    return f"an article cover image, {chat_completion(prompt)}"
+    return f"{prompt_prefix}, {text_in_en}"
 
 @st.cache_data
 def create_images(prompt: str, num_image: int = 4, size: str="512x512"):
@@ -134,31 +128,3 @@ def create_images(prompt: str, num_image: int = 4, size: str="512x512"):
     )
 
     return [image['url'] for image in image_response['data']]
-
-# def generate_jacket_output():
-#     note = '\n'.join(selected_segments)
-
-#     title = create_title(note)
-
-#     liner_note = '\n'.join(segmented_summary)
-#     if len(liner_note) > LINER_NOTE_MAX_LENGTH:
-#         liner_note = summarize(liner_note)
-
-#     image_text = note if len(note) < IMAGE_PROMPT_MAX_LENGTH else summarize(note)
-
-#     image_url = create_image(image_text, "512x512")
-
-#     st.write(f'タイトル: {title}')
-#     st.write(f'ライナーノート:\n{liner_note}')
-#     st.write(f'画像のテキスト:\n{image_text}')
-#     st.image(image_url)
-#     st.write(f'画像 URL: {image_url}')
-
-#     json_data = {
-#         'transcript': transcript.text,
-#         'segmented_summary': segmented_summary,
-#         'title': title,
-#         'liner_note': liner_note,
-#         'image_url': image_url,
-#     }
-#     st.download_button('出力データをダウンロード', str(json_data), file_name='record_jacket.json', mime='application/json')
