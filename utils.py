@@ -55,11 +55,31 @@ def segmentation(long_text: str, min_length: int):
     return segmented_texts
 
 @st.cache_data
-def summarize(text: str):
-    prompt = "次の内容を4文以内でまとめてください"
-    content = f"{prompt}:「{text}」"
+def summarize(text: str, length: int = 300):
+    if len(text) < length:
+        length = len(text)
 
-    return chat_completion(content)
+    num_main_points = (len(text) / 2000 * 5) // 1
+
+    prompt = f"""
+    # 命題
+    テキストの要約をしようとしています。
+    次の要約ステップに沿って文章を要約し、出力してください。
+  
+    # 要約ステップ
+    1. テキストから重要な発言を{num_main_points}箇所抽出する
+    2. ステップ1で抽出したそれぞれの箇所について、前後の文脈を汲み取りながら説明を付け加える
+    3. ステップ2で説明を加えた{num_main_points}箇所を全て結合する
+    4. ステップ3で結合した文章を新聞記事のような体裁に{length}字程度に要約する
+
+    # テキスト
+    {text}
+
+    # 出力
+    ここに要約ステップ4の要約内容を出力してください。
+"""
+
+    return chat_completion(prompt)
 
 @st.cache_data
 def segment_and_summarize(long_text: str, segmentation_min_length: int):
@@ -75,23 +95,45 @@ def segment_and_summarize(long_text: str, segmentation_min_length: int):
 
 @st.cache_data
 def create_title(text: str):
-    prompt = "次の文章から雑誌の対談風記事の見出しを出力してください"
-    content = f"{prompt}:「{text}」"
+    prompt = f"""この文章から15文字程度で簡潔に記事タイトルを出力してください。
+        ```
+        {text}
+        ```"""
   
-    return chat_completion(content)
+    return chat_completion(prompt)
 
 @st.cache_data
-def create_image(prompt: str, size:str="1024x1024"):
+def create_image_prompt(text: str):
+    prompt = f"""
+# ルール
+AIにイラスト生成の指示を出すプロンプトを作成します。
+下のテキストから、形容詞・動詞・名詞のみを使用してキーワードリストを作成してください。
+キーワードは、テキストの内容を表現できるようなものにしてください。
+英語のキーワードにしてください。
+キーワード数は10個以上、30個以内にしてください。
+その他の情報は不要です。
+
+# テキスト
+{text}
+
+# フォーマット
+keyword, keyword, keyword, (以下ループ)
+    """
+  
+    return f"an article cover image, {chat_completion(prompt)}"
+
+@st.cache_data
+def create_images(prompt: str, num_image: int = 4, size: str="512x512"):
     """
     return url to image
     """
     image_response = openai.Image.create(
         prompt=prompt,
-        n=1,
+        n=num_image,
         size=size
     )
 
-    return image_response['data'][0]['url']
+    return [image['url'] for image in image_response['data']]
 
 # def generate_jacket_output():
 #     note = '\n'.join(selected_segments)
