@@ -17,7 +17,13 @@ st.header("Audio to ZINE")
 
 st.subheader("音声 → テキスト")
 st.markdown(":black_circle_for_record:")
-uploaded_file = st.file_uploader("音声データを選ぶ...", type=['mp3', 'm4a'])
+# from audio_recorder_streamlit import audio_recorder
+
+# audio_bytes = audio_recorder(pause_threshold=10.0)
+# if audio_bytes:
+#     st.audio(audio_bytes, format="audio/wav")
+
+uploaded_file = st.file_uploader("音声データを選ぶ...", type=['mp3', 'm4a', 'wav'])
 
 segmented_transcript = []
 
