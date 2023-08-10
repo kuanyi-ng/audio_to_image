@@ -1,6 +1,8 @@
 pipdeptree
+pip-upgrader
 
 watchdog
 streamlit
 openai
 python-dotenv
+audio-recorder-streamlit
